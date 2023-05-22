@@ -32,7 +32,6 @@ const cityStore = useCityStore()
 const router =useRouter()
 const cityClick = (city) => {
   cityStore.currentCity=city.cityName
-
   router.back()
 }
 </script>
