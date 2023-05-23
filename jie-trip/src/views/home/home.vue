@@ -20,7 +20,7 @@ import homeCategories from './cpns/home-categories.vue'
 import homeContent from './cpns/home-content.vue'
 import searchBar from '@/components/search-bar/search-bar.vue'
 import { useHomeStore } from '@/stores/modules/home' 
-import {useScorll}  from "@/hooks/useScorll.js"
+import {useScroll}  from "@/hooks/useScroll.js"
 import { computed } from 'vue'
 
 const homeStore = useHomeStore()
@@ -30,13 +30,12 @@ homeStore.fetchHouselistData()
 
 
 //实现滚动到底部重新获取新的一页数据
-useScorll(()=>{
+useScroll(()=>{
   homeStore.fetchHouselistData()
- 
 })
 
 //解构出useScroll函数中return出的数据
-const { scrollTop} =useScorll()
+const { scrollTop} =useScroll()
 
 //监听scrollTop的值，等它大于等于200就把inShowSearchBar变为true
 // const inShowSearchBar =ref(false)
