@@ -1,18 +1,19 @@
 <template>
+  <div class="detail top-page" ref="detailRef">
      <tab-control
-      v-if="showTabControl"
+     v-if="showTabControl"
       class="tabs"
       :titles="names"
       @tabItemClick="tabClick"
       ref="tabControlRef"
-    />
+      />
    <van-nav-bar
   title="旅途"
   left-text="房屋详情"
   left-arrow
   @click-left="onClickLeft"
 />
-<div class="main" v-if="mainPart">
+<div class="main" v-if="mainPart" v-memo="[mainPart]">
     <!-- 给组件传入对应的数据 -->
     <detailSwipe :swipe-data="mainPart.topModule.housePicture.housePics"/>
     <detailinfos name="描述" :ref="getSectionRef" :top-infos="mainPart.topModule"/>
@@ -27,7 +28,7 @@
       <img src="@/assets/img/detail/icon_ensure.png" alt="">
       <div class="text">弘源旅途, 永无止境!</div>
 </div>
-
+</div>
 
 </template>
 
@@ -61,20 +62,52 @@ const mainPart=computed(()=> detailInfos.value.mainPart)
 const onClickLeft = () => {
     router.back()
 }
+//tabConrtol相关操作
+const detailRef =ref()
 const tabControlRef = ref()
-const {scrollTop}=useScroll(tabControlRef)
+const {scrollTop}=useScroll(detailRef)
+
 const showTabControl = computed(()=>{
-        return scrollTop.value >300
+      return scrollTop.value >=300
 })
 
 
 
+//监听点击 scrollTo 跳到哪里
+const sectionEls=ref({})
+
+const names=computed(()=>{
+  return Object.keys(sectionEls.value)
+})
+
+const getSectionRef=(value)=>{
+  if(!value) return
+  const name =value.$el.getAttribute("name")
+  sectionEls.value[name]=value.$el
+}
+
+const tabClick=(index)=>{
+  const key =Object.keys(sectionEls.value)[index]
+  const el=sectionEls.value[key]
+  let instance =el.offsetTop
+  if (index !==0){
+    instance =instance -44
+  }
+  detailRef.value.scrollTo({
+    top:instance,
+    behavior: "smooth"
+  })
+}
+
 </script>
 
 <style lang="less" scoped>
+.detail{
+  height: 100vh;
+}
 .tabs {
   position: fixed;
-  z-index: 9;
+  z-index: 99;
   left: 0;
   right: 0;
   top: 0;

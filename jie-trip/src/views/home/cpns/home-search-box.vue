@@ -93,8 +93,8 @@ const router=useRouter()
 //获取地址
 const positionClick = () => {
     navigator.geolocation.getCurrentPosition(res => {
-        console.log(res.coords.latitude);
-        console.log(res.coords.longitude);
+        console.log("纬度",res.coords.latitude);
+        console.log("经度",res.coords.longitude);
     },err =>{
         console.log("失败");
     }) 

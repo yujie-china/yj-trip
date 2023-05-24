@@ -1,17 +1,21 @@
 <template>
-    <div class="home">
+    <div class="home" ref="homeRef">
         <homeTabBar/>
         <div class="search-bar" v-if="inShowSearchBar">
           <search-bar :start-date="'09.19'" :end-date="'09.20'"/>
           </div>
+          <homeSearchBox  />
+        <homeCategories />
         <div class="banner">
             <img src="@/assets/img/home/banner.webp" alt="">
         </div>
-        <homeSearchBox  />
-        <homeCategories />
+
         <homeContent/>
     </div>
 </template>
+<script>
+ export default { name: "home" }
+ </script>
 
 <script setup>
 import homeTabBar from './cpns/home-tab-bar.vue'
@@ -21,7 +25,7 @@ import homeContent from './cpns/home-content.vue'
 import searchBar from '@/components/search-bar/search-bar.vue'
 import { useHomeStore } from '@/stores/modules/home' 
 import {useScroll}  from "@/hooks/useScroll.js"
-import { computed } from 'vue'
+import { onActivated, ref, watch,computed } from 'vue'
 
 const homeStore = useHomeStore()
 homeStore.fetchHotSuggestData()
@@ -30,12 +34,17 @@ homeStore.fetchHouselistData()
 
 
 //实现滚动到底部重新获取新的一页数据
-useScroll(()=>{
-  homeStore.fetchHouselistData()
+const homeRef = ref()
+const { isReachBottom, scrollTop } = useScroll()
+watch(isReachBottom, (newValue) => {
+  if (newValue) {
+    homeStore.fetchHouselistData().then(() => {
+      isReachBottom.value = false
+    })
+  }
 })
-
 //解构出useScroll函数中return出的数据
-const { scrollTop} =useScroll()
+
 
 //监听scrollTop的值，等它大于等于200就把inShowSearchBar变为true
 // const inShowSearchBar =ref(false)
@@ -63,6 +72,14 @@ const inShowSearchBar = computed(()=>{
 //   hotSuggest.value=res.data
 
 // })
+
+// 跳转回home时, 保留原来的位置
+onActivated(() => {
+  homeRef.value?.scrollTo({
+    top: scrollTop.value
+  })
+})
+
 
 </script>
 
